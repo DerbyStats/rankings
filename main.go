@@ -16,6 +16,7 @@ import (
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/sqltocsv"
 	_ "github.com/mattn/go-sqlite3"
@@ -329,6 +330,7 @@ func main() {
 	}
 
 	r := mux.NewRouter()
+	r.Use(handlers.CompressHandler)
 	r.Handle("/metrics", promhttp.Handler())
 
 	r.Path("/").Handler(cacheClient.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

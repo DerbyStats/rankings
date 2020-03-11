@@ -229,7 +229,7 @@ var (
 func serveLadder(logger log.Logger, db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	genus := r.URL.Query().Get("genus")
 	if _, ok := r.URL.Query()["genus"]; !ok {
-		genus = "Women" // No paramater specified.
+		genus = "Women" // No parameter specified.
 	}
 	region := r.URL.Query().Get("region")
 
@@ -259,6 +259,31 @@ func serveLadder(logger log.Logger, db *sql.DB, w http.ResponseWriter, r *http.R
 	w.Write([]byte(str))
 }
 
+func serveTeam(logger log.Logger, db *sql.DB, w http.ResponseWriter, r *http.Request) {
+  vars := mux.Vars(r)
+  id, _ := strconv.ParseInt(vars["team"], 10, 64)
+
+  teams, err := GetTeamInfo(db, []int{int(id)})
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+  team, ok := teams[int(id)]
+  if !ok {
+		http.Error(w, "Team not found", 404)
+		return
+  }
+
+	tmpl, err := template.ParseFiles("templates/team.html", "templates/common.html")
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	tmpl.Execute(w, team)
+}
+
 func main() {
 	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
 	db, err := sql.Open("sqlite3", "./rankings.db?_mutex=full&_journal_mode=WAL")
@@ -273,6 +298,9 @@ func main() {
 
 	r.Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		serveLadder(logger, db, w, r)
+	})
+  r.Path("/teams/{team:[0-9]+}").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		serveTeam(logger, db, w, r)
 	})
 
 	term := make(chan os.Signal, 1)

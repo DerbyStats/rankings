@@ -25,10 +25,10 @@
     <tr><th>Rank</th><th>Team</th><th>Rating</th></tr>
   </thead>
   <tbody>
-    {{range .Rankings}}<tr team="{{.Team}}">
+    {{range .Rankings}}<tr>
 <td>{{.Rank}}</td>
 <td title="{{.TeamInfo.League}} {{.TeamInfo.Name}}
-{{.TeamInfo.Location}}">{{if eq "Travel Team" .TeamInfo.Type}}{{.TeamInfo.League}}{{else}}{{.TeamInfo.Name}}{{end}}</td>
+{{.TeamInfo.Location}}"><a href="/teams/{{.Team}}">{{if eq "Travel Team" .TeamInfo.Type}}{{.TeamInfo.League}}{{else}}{{.TeamInfo.Name}}{{end}}</a></td>
 <td>{{printf "%.1f" .Rating}}</td>
 </tr>{{end}}
   </tbody>

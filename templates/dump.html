@@ -1,0 +1,16 @@
+{{template "header"}}
+
+{{ $dot := . }}
+<h2>Dump</h2>
+
+<div>
+Here you can download dumps of the various tables backing the rankings. If you
+plan on regularly hitting these more than once a day, please let us know on the
+Facebook group first.
+</div>
+
+<ul>
+  {{range .}}<li><a href="?table={{.}}" rel="nofollow">{{.}}</a></li>{{end}}
+</ul>
+
+{{template "footer"}}

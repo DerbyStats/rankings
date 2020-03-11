@@ -17,6 +17,7 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/gorilla/mux"
+	"github.com/joho/sqltocsv"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/victorspringer/http-cache"
@@ -267,6 +268,41 @@ func serveTeam(logger log.Logger, db *sql.DB, w http.ResponseWriter, r *http.Req
 	}
 }
 
+func serveDump(logger log.Logger, db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	table := r.URL.Query().Get("table")
+	tables := []string{"Games", "Teams", "Tournaments", "GameSanctioning", "TournamentHostingTeams"}
+
+	for _, t := range tables {
+		if t == table {
+			rows, err := db.Query(`SELECT * FROM ` + t)
+			if err != nil {
+				level.Error(logger).Log("err", err)
+				http.Error(w, err.Error(), 500)
+				return
+			}
+			defer rows.Close()
+			w.Header().Set("Content-type", "text/csv")
+			w.Header().Set("Content-Disposition", "attachment; filename=\""+t+".csv\"")
+			sqltocsv.Write(w, rows)
+			return
+		}
+	}
+
+	// No valid table was passed in.
+	tmpl, err := template.ParseFiles("templates/dump.html", "templates/common.html")
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	err = tmpl.Execute(w, tables)
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+}
+
 func main() {
 	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
 	db, err := sql.Open("sqlite3", "./rankings.db?_mutex=full&_journal_mode=WAL")
@@ -300,6 +336,9 @@ func main() {
 	})))
 	r.Path("/teams/{team:[0-9]+}").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		serveTeam(logger, db, w, r)
+	})
+	r.Path("/dump").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		serveDump(logger, db, w, r)
 	})
 
 	term := make(chan os.Signal, 1)

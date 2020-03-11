@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
 	"html/template"
@@ -12,14 +11,16 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"syscall"
+	"time"
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/victorspringer/http-cache"
+	"github.com/victorspringer/http-cache/adapter/memory"
 )
 
 type TeamInfo struct {
@@ -221,11 +222,6 @@ func renderLadder(db *sql.DB, genus string, region string, w io.Writer) error {
 	return tmpl.Execute(w, data)
 }
 
-var (
-	cacheMu = sync.Mutex{}
-	cache   = map[string]string{}
-)
-
 func serveLadder(logger log.Logger, db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	genus := r.URL.Query().Get("genus")
 	if _, ok := r.URL.Query()["genus"]; !ok {
@@ -233,47 +229,29 @@ func serveLadder(logger log.Logger, db *sql.DB, w http.ResponseWriter, r *http.R
 	}
 	region := r.URL.Query().Get("region")
 
-	key := genus + "#" + region
-
-	cacheMu.Lock()
-	str, ok := cache[key]
-	cacheMu.Unlock()
-
-	if ok {
-		w.Write([]byte(str))
-		return
-	}
-
-	buf := &bytes.Buffer{}
-	err := renderLadder(db, genus, region, buf)
+	err := renderLadder(db, genus, region, w)
 	if err != nil {
 		level.Error(logger).Log("err", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	str = string(buf.Bytes())
-
-	cacheMu.Lock()
-	cache[key] = str
-	cacheMu.Unlock()
-	w.Write([]byte(str))
 }
 
 func serveTeam(logger log.Logger, db *sql.DB, w http.ResponseWriter, r *http.Request) {
-  vars := mux.Vars(r)
-  id, _ := strconv.ParseInt(vars["team"], 10, 64)
+	vars := mux.Vars(r)
+	id, _ := strconv.ParseInt(vars["team"], 10, 64)
 
-  teams, err := GetTeamInfo(db, []int{int(id)})
+	teams, err := GetTeamInfo(db, []int{int(id)})
 	if err != nil {
 		level.Error(logger).Log("err", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
-  team, ok := teams[int(id)]
-  if !ok {
+	team, ok := teams[int(id)]
+	if !ok {
 		http.Error(w, "Team not found", 404)
 		return
-  }
+	}
 
 	tmpl, err := template.ParseFiles("templates/team.html", "templates/common.html")
 	if err != nil {
@@ -281,7 +259,12 @@ func serveTeam(logger log.Logger, db *sql.DB, w http.ResponseWriter, r *http.Req
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	tmpl.Execute(w, team)
+	err = tmpl.Execute(w, team)
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func main() {
@@ -293,13 +276,29 @@ func main() {
 	}
 	defer db.Close()
 
+	memory, err := memory.NewAdapter(
+		memory.AdapterWithAlgorithm(memory.LRU),
+		memory.AdapterWithCapacity(10000)) // Number of cache entries.
+	if err != nil {
+		level.Error(logger).Log("msg", "Error creating LRU", "err", err)
+		os.Exit(1)
+	}
+	cacheClient, err := cache.NewClient(
+		cache.ClientWithAdapter(memory),
+		cache.ClientWithTTL(1000*time.Hour), // Infinite.
+	)
+	if err != nil {
+		level.Error(logger).Log("msg", "Failed to create memory cache client", "err", err)
+		os.Exit(1)
+	}
+
 	r := mux.NewRouter()
 	r.Handle("/metrics", promhttp.Handler())
 
-	r.Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Path("/").Handler(cacheClient.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		serveLadder(logger, db, w, r)
-	})
-  r.Path("/teams/{team:[0-9]+}").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	})))
+	r.Path("/teams/{team:[0-9]+}").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		serveTeam(logger, db, w, r)
 	})
 

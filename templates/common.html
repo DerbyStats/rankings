@@ -1,94 +1,107 @@
 {{define "header"}}
 <!DOCTYPE html>
-  <html>
-  <head>
-  <title>DerbyStats: Rankings</title>
-  <style>
-  body {
-    background-color: #c1946a;
-    color: #dddddd;
-    margin: 0;
-    font-family: sans-serif;
-  }
-  table {
-    margin: 2ex 0;
-  }
-  table, th, td {
-    border: 1px solid #aaaaaa;
-    border-collapse: collapse;
-  }
-  td, th {
-    padding: .5ex;
-  }
-  tbody tr:hover {
-    background-color: #506d37;
-  }
+<html>
+   <head>
+      <title>DerbyStats: Rankings</title>
+      <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <!-- Compiled and minified CSS -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+      <!-- Compiled and minified JavaScript -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+      <style>
 
-  .heading {
-    font-family: serif;
-    text-align: center;
-    color: #82b74b;
-    background-color: #3e4444;
-  }
-  h1 {
-    margin-top: 0;
-    margin-bottom: 0;
-    font-size: 300%;
-  }
-  .subtitle {
-    font-size: 110%;
-    font-style: italic;
-  }
+      div.selector {
+        margin-bottom: 10px;
+      }
 
-  .main {
-    margin: 0;
-    padding: 2ex;
-    background-color: #405d27;
-    margin-left: 10%;
-    margin-right: 10%;
-  }
-  .main a {
-    color: #eeeeee;
-  }
+      .selector span {
+        margin: 10px 20px 10px 0;
+      }
 
-  .footer {
-    font-size: 70%;
-    text-align: center;
-  }
+      .selector a {
+        color: #f7f7f7;
+        font-size: 1.2rem;
+      }
 
-  .selector span {
-    border: 1px solid #aaaaaa;
-    padding: 0 1ex;
-    font-size: 150%;
-    text-align: center;
-  }
-  .selector span a {
-    text-decoration: none;
-  }
-  .selector span.selected {
-    background-color: #3e4444;
-  }
+      .selector a:hover {
+        color: #fff;
+      }
 
+      html {
+        font-size: 1.2rem;
+        line-height: 1.4;
+      }
 
-  .ladder tr td:nth-child(1) {
-    text-align: right;
-  }
-  .ladder tr td:nth-child(3) {
-    text-align: right;
-  }
-  </style>
-  </head>
-  <body>
-  <div class="heading">
-  <h1>DerbyStats: Rankings</h1>
-  <div class="subtitle">Ordering for Roller Derby</div>
-  </div>
-  <div class="main">
-{{end}}
+      .heading h1 {
+        font-size: 3rem;
+        margin-bottom: 0;
+      }
+      .heading h6 {
+        font-size: 1.1rem;
+        font-style: italic;
+        margin-top: 5px;
+      }
 
-{{define "footer"}}
-<div class="footer"><a href="https://live.derbystats.eu/">Live</a> | <a href="https://www.facebook.com/groups/DerbyStats/">Discuss</a> | <a href="https://github.com/DerbyStats/">Source Code</a></div>
-</div> {{/* main */}}
-</body>
+      @media only screen and (min-width: 993px) .container {
+        width: 90%;
+      }
+
+      .selected a.btn {
+        background-color: #ee6e73;
+      }
+
+      body,
+      section,
+      td,
+      p {
+        font-size: 1.2rem;
+        line-height: 1.4;
+      }
+
+      @media only screen and (min-width: 1024px) {
+        .wrapper {
+          padding: 15px;
+        }
+      }
+
+      </style>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+   </head>
+   <body class="teal lighten-2">
+      <div class="container white">
+      <div class="section">
+      <div class="row">
+         <div class="col s12">
+            <div class="heading">
+               <h1>DerbyStats: Rankings</h1>
+               <h6>Ordering for Roller Derby</h6>
+            </div>
+         </div>
+         <!-- end col -->
+      </div>
+      <!-- end row -->
+	<footer>
+      <div class="section">
+         <div class="row">
+            <div class="col s12">
+               <div class="main">
+                  {{end}}
+                  {{define "footer"}}
+                  <div class="footer"><a href="https://live.derbystats.eu/">Live</a> | <a href="https://www.facebook.com/groups/DerbyStats/">Discuss</a> | <a href="https://github.com/DerbyStats/">Source Code</a></div>
+
+               </div>
+               {{/* main */}}
+            </div>
+         </div>
+         <!-- end col -->
+      </div>
+      <!-- end row -->
+	  </div>
+	  <!-- end section -->
+	</footer>
+	</div>
+   </body>
 </html>
 {{end}}

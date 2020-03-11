@@ -7,20 +7,20 @@
 
 <div class="selector">
   {{range .Genera}}<span {{if eq . $dot.Genus}}class="selected"{{end}}>
-  <a href="?genus={{.}}&region={{$dot.Region}}">{{.}}</a>
+  <a href="?genus={{.}}&region={{$dot.Region}}" class="btn waves-effect waves-light btn btn-large white-text">{{.}}</a>
   </span>{{end}}
 </div>
 
 <div class="selector">
   {{range .Regions}}
   <span {{if eq . $dot.Region}}class="selected"{{end}}>
-    <a href="?genus={{$dot.Genus}}&region={{.}}">
+    <a href="?genus={{$dot.Genus}}&region={{.}}" class="btn waves-effect waves-red btn white-text">
     {{if eq . ""}}Global{{else}}{{.}}{{end}}
     </a>
   </span>
   {{end}}
 </div>
-<table class="ladder">
+<table class="ladder striped">
   <thead>
     <tr><th>Rank</th><th>Team</th><th>Rating</th></tr>
   </thead>

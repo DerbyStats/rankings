@@ -1,0 +1,12 @@
+{{template "header"}}
+
+{{ $dot := . }}
+<h3>{{.Name}}</h3>
+
+<div>
+{{.Type}} of {{.League}} {{with .Location}} from {{.}}{{end}}
+{{with .Website}}<br/><a href="{{.}}" rel="ugc">{{.}}</a>{{end}}
+</div>
+<div>Categories: {{.Genus}}, {{.Region}}</div>
+
+{{template "footer"}}

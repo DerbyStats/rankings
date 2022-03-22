@@ -1,0 +1,40 @@
+{{template "header"}}
+
+{{ $dot := . }}
+
+<div>Had enough of rankings? Look at <a href="https://live.derbystats.eu/">Live Scoreboards!</a></div>
+<br/>
+
+<div class="selector">
+  {{range .Genera}}<span {{if eq . $dot.Genus}}class="selected"{{end}}>
+  <a href="?genus={{.}}&region={{$dot.Region}}" class="btn waves-effect waves-light btn btn-large white-text">{{.}}</a>
+  </span>{{end}}
+</div>
+
+<div class="selector">
+  {{range .Regions}}
+  <span {{if eq . $dot.Region}}class="selected"{{end}}>
+    <a href="?genus={{$dot.Genus}}&region={{.}}" class="btn waves-effect waves-red btn white-text">
+    {{if eq . ""}}Global{{else}}{{.}}{{end}}
+    </a>
+  </span>
+  {{end}}
+</div>
+<table class="ladder striped">
+  <thead>
+    <tr><th>Rank</th><th>Team</th><th>Rating</th></tr>
+  </thead>
+  <tbody>
+    {{range .Rankings}}<tr>
+<td>{{.Rank}}</td>
+<td title="{{.TeamInfo.League}} {{.TeamInfo.Name}}
+{{.TeamInfo.Location}}"><a href="/teams/{{.Team}}">{{if eq "Travel Team" .TeamInfo.Type}}{{.TeamInfo.League}}{{else}}{{.TeamInfo.Name}}{{end}}</a></td>
+<td>{{printf "%.1f" .Rating}}</td>
+</tr>{{end}}
+  </tbody>
+</table>
+
+<div>
+These rankings are based on data from <a href="http://flattrackstats.com/">Flat Track Stats</a>.
+</div>
+{{template "footer"}}

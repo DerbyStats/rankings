@@ -1,0 +1,128 @@
+{{define "header"}}
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>DerbyStats: Rankings</title>
+      <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <!-- Compiled and minified CSS -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+      <!-- Compiled and minified JavaScript -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+      <style>
+
+      div.selector {
+        margin-bottom: 10px;
+      }
+
+      .selector span {
+        margin: 10px 20px 10px 0;
+      }
+
+      .selector a {
+        color: #f7f7f7;
+        font-size: 1.2rem;
+      }
+
+      .selector a:hover {
+        color: #fff;
+      }
+
+      html {
+        font-size: 1.2rem;
+        line-height: 1.4;
+      }
+
+      .heading h1 {
+        font-size: 3rem;
+        margin-bottom: 0;
+      }
+      .heading h6 {
+        font-size: 1.1rem;
+        font-style: italic;
+        margin-top: 5px;
+      }
+
+      table a {
+        color: black;
+      }
+
+
+      @media only screen and (min-width: 993px) .container {
+        width: 90%;
+      }
+      @media only screen and (max-width: 420px) {
+        .container {
+          width:100%
+        }
+        h1 {
+          font-size: 2rem;
+        }
+        .selector {
+          border-bottom: 1px solid #eee;
+        }
+        .selector span {
+          margin: 40px 15px;
+          display: block;
+          height: 40px;
+        }
+      }
+
+      .selected a.btn {
+        background-color: #ee6e73;
+      }
+
+      body,
+      section,
+      td,
+      p {
+        font-size: 1.2rem;
+        line-height: 1.4;
+      }
+
+      @media only screen and (min-width: 1024px) {
+        .wrapper {
+          padding: 15px;
+        }
+      }
+
+      </style>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+   </head>
+   <body class="teal lighten-2">
+      <div class="container white">
+      <div class="section">
+      <div class="row">
+         <div class="col s12">
+            <div class="heading">
+               <h1>DerbyStats: Rankings</h1>
+               <h6>Ordering for Roller Derby</h6>
+            </div>
+         </div>
+         <!-- end col -->
+      </div>
+      <!-- end row -->
+	<footer>
+      <div class="section">
+         <div class="row">
+            <div class="col s12">
+               <div class="main">
+                  {{end}}
+                  {{define "footer"}}
+                  <div class="footer"><a href="https://live.derbystats.eu/">Live</a> | <a href="https://www.facebook.com/groups/DerbyStats/">Discuss</a> | <a href="https://github.com/DerbyStats/">Source Code</a></div>
+
+               </div>
+               {{/* main */}}
+            </div>
+         </div>
+         <!-- end col -->
+      </div>
+      <!-- end row -->
+	  </div>
+	  <!-- end section -->
+	</footer>
+	</div>
+   </body>
+</html>
+{{end}}
